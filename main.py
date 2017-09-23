@@ -1,6 +1,3 @@
-# this app uses python-telegram-bot (https://github.com/python-telegram-bot/python-telegram-bot)
-# this app uses tmdbsimple (https://github.com/celiao/tmdbsimple)
-# this app uses The Movie DB (https://www.themoviedb.org)
 import json
 import random
 import logging
@@ -31,6 +28,7 @@ def show_echo_message(bot, update):
     update.message.reply_text(update.message.text)
 
 
+# TODO: fix problem with invalid movie id (e.g. https://www.themoviedb.org/movie/225560)
 def show_random_movie(bot, update):
     # First, get latest movie id
     movies = tmdb.Movies()
