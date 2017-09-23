@@ -2,7 +2,9 @@
 # this app uses tmdbsimple (https://github.com/celiao/tmdbsimple)
 # this app uses The Movie DB (https://www.themoviedb.org)
 import json
+import random
 import logging
+import tmdbsimple as tmdb
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
 CONFIG_FILE = 'config.json'
@@ -30,7 +32,19 @@ def show_echo_message(bot, update):
 
 
 def show_random_movie(bot, update):
-    update.message.reply_text('Lock, stock and two smoking barrels')
+    # First, get latest movie id
+    movies = tmdb.Movies()
+    movies.latest()
+    latest_movie_id = movies.id
+    logger.info('Last movie id - ' + str(latest_movie_id))
+    # Next, generate random number in range between 1 and latest movie id
+    random_movie_id = random.randint(1, latest_movie_id)
+    logger.info('Random movie id - ' + str(random_movie_id))
+    # Request a movie from movie database by random_movie_id
+    movies = tmdb.Movies(random_movie_id)
+    movies.info()
+    bot_answer = 'Hey, that movie looks so pretty: https://www.themoviedb.org/movie/' + str(random_movie_id)
+    update.message.reply_text(bot_answer)
 
 
 def show_random_cartoon(bot, update):
@@ -54,6 +68,9 @@ def main():
     # database access token
     db_access_token = json_data['database']['api_key_v3']
     logger.info('Database access token - ' + db_access_token)
+
+    # init tmdb library
+    tmdb.API_KEY = db_access_token
 
     # Create the EventHandler and pass it your bot's token.
     updater = Updater(bot_access_token)
